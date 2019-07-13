@@ -22,7 +22,27 @@ class BurgerBuilder extends Component {
       cheese: 0,
       meat: 0
     },
-    totalPrice: 4
+    totalPrice: 4,
+    purchaseable: false
+  };
+
+  //call at end of add and remove ingredient handler to check whethre we should turn purchasable to true or false
+  updatePurchaseState = ingredients => {
+    //turn object into an array of these values here again
+    //creates array of string entries- salad, bacon, cheese, but I need amounts, not names
+    //we can map this array into the one we need
+    const sum = Object.keys(ingredients)
+      .map(igKey => {
+        //return the value for a given key - this will be the amount, accessing
+        //in object
+        return ingredients[igKey];
+      })
+      //now I have an array of values, all I need to do is then reduce array to sum
+      .reduce((sum, el) => {
+        return sum + el;
+      }, 0);
+    //sum > 0 is either true or false. Its true if we have at least1 ingredient, or else its false.
+    this.setState({ purchaseable: sum > 0 });
   };
 
   addIngredientHandler = type => {
@@ -36,6 +56,7 @@ class BurgerBuilder extends Component {
     const oldPrice = this.state.totalPrice;
     const newPrice = oldPrice + priceAddition;
     this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
+    this.updatePurchaseState(updatedIngredients);
   };
 
   removeIngredienthandler = type => {
@@ -56,6 +77,7 @@ class BurgerBuilder extends Component {
     //deduct price
     const newPrice = oldPrice - priceSubtraction;
     this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
+    this.updatePurchaseState(updatedIngredients);
   };
 
   render() {
@@ -79,6 +101,7 @@ class BurgerBuilder extends Component {
           ingredientRemoved={this.removeIngredienthandler}
           disabled={disabledInfo}
           price={this.state.totalPrice}
+          purchaseable={this.state.purchaseable}
         />
       </Aux>
     );
