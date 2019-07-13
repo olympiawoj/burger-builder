@@ -59,10 +59,11 @@ class BurgerBuilder extends Component {
   };
 
   render() {
+    //creating a copy of our ingredients Object in disabled Info
     const disabledInfo = {
       ...this.state.ingredients
     };
-
+    //loop through every key of disabledInfo
     for (let key in disabledInfo) {
       //it is the value of each KEY , check returns true or false so updates this
       //in our copied object with true or false
@@ -77,6 +78,7 @@ class BurgerBuilder extends Component {
           ingredientAdded={this.addIngredientHandler}
           ingredientRemoved={this.removeIngredienthandler}
           disabled={disabledInfo}
+          price={this.state.totalPrice}
         />
       </Aux>
     );
