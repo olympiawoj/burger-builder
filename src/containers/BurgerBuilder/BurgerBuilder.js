@@ -25,7 +25,17 @@ class BurgerBuilder extends Component {
       meat: 0
     },
     totalPrice: 4,
-    purchaseable: false
+    purchaseable: false,
+    purchasing: false
+  };
+
+  purchaseCancelHandler = () => {
+    this.setState({ purchasing: false });
+  };
+
+  //should be triggered whenever user clicks order now button
+  purchaseHandler = () => {
+    this.setState({ purchasing: true });
   };
 
   //call at end of add and remove ingredient handler to check whethre we should turn purchasable to true or false
@@ -97,7 +107,10 @@ class BurgerBuilder extends Component {
 
     return (
       <Aux>
-        <Modal>
+        <Modal
+          show={this.state.purchasing}
+          modalClosed={this.purchaseCancelHandler}
+        >
           <OrderSummary ingredients={this.state.ingredients} />
         </Modal>
         <Burger ingredients={this.state.ingredients} />
@@ -107,6 +120,7 @@ class BurgerBuilder extends Component {
           disabled={disabledInfo}
           price={this.state.totalPrice}
           purchaseable={this.state.purchaseable}
+          ordered={this.purchaseHandler}
         />
       </Aux>
     );
