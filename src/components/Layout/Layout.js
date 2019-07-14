@@ -2,6 +2,8 @@ import React from "react";
 //without .js bc our build workflow adds file extn
 import Aux from "../../hoc/Aux";
 import Toolbar from "../../components/Navigation/Toolbar/Toolbar";
+import SideDrawer from "../Navigation/SideDrawer/SideDrawer";
+
 import classes from "./Layout.module.css";
 
 //allows us to use layout component as a wrapper for core content we want to render to the screen
@@ -10,6 +12,7 @@ import classes from "./Layout.module.css";
 const layout = props => (
   <Aux>
     <Toolbar />
+    <SideDrawer />
     <div>SideDraw, Backdrop</div>
     <main className={classes.Content}>{props.children}</main>
   </Aux>
