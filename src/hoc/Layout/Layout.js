@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 //without .js bc our build workflow adds file extn
-import Aux from "../../hoc/Aux";
+import Aux from "../Aux/Aux";
 import Toolbar from "../../components/Navigation/Toolbar/Toolbar";
-import SideDrawer from "../Navigation/SideDrawer/SideDrawer";
+import SideDrawer from "../../components/Navigation/SideDrawer/SideDrawer";
 
 import classes from "./Layout.module.css";
 
