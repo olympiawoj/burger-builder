@@ -11,19 +11,26 @@ import classes from "./Layout.module.css";
 //add CSS class to main to make sure it has some margin
 class Layout extends Component {
   state = {
-    showSideDrawer: true
+    showSideDrawer: false
   };
 
   sideDrawerClosedHandler = props => {
     this.setState({ showSideDrawer: false });
   };
 
-  sideDrawerOpenedHandler = props => {};
+  //if you plan on using state, you should do it this way bc it's async, depends on prevState
+  sideDrawerToggleHandler = props => {
+    this.setState(prevState => {
+      return {
+        showSideDrawer: !prevState.showSideDrawer
+      };
+    });
+  };
 
   render() {
     return (
       <Aux>
-        <Toolbar />
+        <Toolbar toggle={this.sideDrawerToggleHandler} />
         <SideDrawer
           closed={this.sideDrawerClosedHandler}
           open={this.state.showSideDrawer}
