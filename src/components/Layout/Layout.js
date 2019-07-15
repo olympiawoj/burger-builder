@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 //without .js bc our build workflow adds file extn
 import Aux from "../../hoc/Aux";
 import Toolbar from "../../components/Navigation/Toolbar/Toolbar";
@@ -9,13 +9,28 @@ import classes from "./Layout.module.css";
 //allows us to use layout component as a wrapper for core content we want to render to the screen
 
 //add CSS class to main to make sure it has some margin
-const layout = props => (
-  <Aux>
-    <Toolbar />
-    <SideDrawer />
-    <div>SideDraw, Backdrop</div>
-    <main className={classes.Content}>{props.children}</main>
-  </Aux>
-);
+class Layout extends Component {
+  state = {
+    showSideDrawer: true
+  };
 
-export default layout;
+  sideDrawerClosedHandler = props => {
+    this.setState({ showSideDrawer: false });
+  };
+
+  sideDrawerOpenedHandler = props => {};
+
+  render() {
+    return (
+      <Aux>
+        <Toolbar />
+        <SideDrawer
+          closed={this.sideDrawerClosedHandler}
+          open={this.state.showSideDrawer}
+        />
+        <main className={classes.Content}>{this.props.children}</main>
+      </Aux>
+    );
+  }
+}
+export default Layout;
