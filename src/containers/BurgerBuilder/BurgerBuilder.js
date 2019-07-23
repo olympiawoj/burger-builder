@@ -1,17 +1,13 @@
-//rcc - class component shortcut w/ snippets
-//render is a lifecycle method - this is a must, where we need to return JSX code.
-
 import React, { Component } from "react";
+
+import Aux from "../../hoc/Aux/Aux";
 import Burger from "../../components/Burger/Burger";
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
 import Modal from "../../components/UI/Modal/Modal";
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
-
 import axios from "../../axios-orders";
-
-import Aux from "../../hoc/Aux/Aux";
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -21,81 +17,40 @@ const INGREDIENT_PRICES = {
 };
 
 class BurgerBuilder extends Component {
+  // constructor(props) {
+  //     super(props);
+  //     this.state = {...}
+  // }
   state = {
     ingredients: null,
     totalPrice: 4,
-    purchaseable: false,
+    purchasable: false,
     purchasing: false,
-    loading: false
+    loading: false,
+    error: false
   };
 
   componentDidMount() {
     axios
       .get("https://olympias-burger-app.firebaseio.com/ingredients.json")
-      .then(res => {
-        this.setState({ ingredients: res.data });
+      .then(response => {
+        this.setState({ ingredients: response.data });
       })
       .catch(error => {
         this.setState({ error: true });
       });
   }
 
-  purchaseContinueHandler = () => {
-    this.setState({ loading: true });
-    const order = {
-      ingredients: this.state.ingredients,
-      price: this.state.totalPrice,
-      customer: {
-        name: "Olympia Wojcik",
-        address: {
-          street: "Teststreet 1",
-          zipCode: "13234",
-          country: "United States"
-        },
-        email: "test@test.com"
-      },
-      deliveryMethod: "fastest"
-    };
-
-    axios
-      .post("/orders.json", order)
-      .then(response => {
-        this.setState({ loading: false, purchasing: false });
-        console.log(response);
-      })
-      .catch(err => {
-        this.setState({ loading: false, purchasing: false });
-        console.log(err);
-      });
-  };
-
-  purchaseCancelHandler = () => {
-    this.setState({ purchasing: false });
-  };
-
-  //should be triggered whenever user clicks order now button
-  purchaseHandler = () => {
-    this.setState({ purchasing: true });
-  };
-
-  //call at end of add and remove ingredient handler to check whethre we should turn purchasable to true or false
-  updatePurchaseState = ingredients => {
-    //turn object into an array of these values here again
-    //creates array of string entries- salad, bacon, cheese, but I need amounts, not names
-    //we can map this array into the one we need
+  updatePurchaseState(ingredients) {
     const sum = Object.keys(ingredients)
       .map(igKey => {
-        //return the value for a given key - this will be the amount, accessing
-        //in object
         return ingredients[igKey];
       })
-      //now I have an array of values, all I need to do is then reduce array to sum
       .reduce((sum, el) => {
         return sum + el;
       }, 0);
-    //sum > 0 is either true or false. Its true if we have at least1 ingredient, or else its false.
-    this.setState({ purchaseable: sum > 0 });
-  };
+    this.setState({ purchasable: sum > 0 });
+  }
 
   addIngredientHandler = type => {
     const oldCount = this.state.ingredients[type];
@@ -107,76 +62,103 @@ class BurgerBuilder extends Component {
     const priceAddition = INGREDIENT_PRICES[type];
     const oldPrice = this.state.totalPrice;
     const newPrice = oldPrice + priceAddition;
-    this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
+    this.setState({ totalPrice: newPrice, ingredients: updatedIngredients });
     this.updatePurchaseState(updatedIngredients);
   };
 
-  removeIngredienthandler = type => {
+  removeIngredientHandler = type => {
     const oldCount = this.state.ingredients[type];
     if (oldCount <= 0) {
-      return; //nothing happens
+      return;
     }
     const updatedCount = oldCount - 1;
-    //create copy of ingredients in state
     const updatedIngredients = {
       ...this.state.ingredients
     };
-    //update the count for this type
     updatedIngredients[type] = updatedCount;
-    //find out how much to subtract
-    const priceSubtraction = INGREDIENT_PRICES[type];
+    const priceDeduction = INGREDIENT_PRICES[type];
     const oldPrice = this.state.totalPrice;
-    //deduct price
-    const newPrice = oldPrice - priceSubtraction;
-    this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
+    const newPrice = oldPrice - priceDeduction;
+    this.setState({ totalPrice: newPrice, ingredients: updatedIngredients });
     this.updatePurchaseState(updatedIngredients);
   };
 
+  purchaseHandler = () => {
+    this.setState({ purchasing: true });
+  };
+
+  purchaseCancelHandler = () => {
+    this.setState({ purchasing: false });
+  };
+
+  purchaseContinueHandler = () => {
+    // alert('You continue!');
+    this.setState({ loading: true });
+    const order = {
+      ingredients: this.state.ingredients,
+      price: this.state.totalPrice,
+      customer: {
+        name: "Max Schwarzmüller",
+        address: {
+          street: "Teststreet 1",
+          zipCode: "41351",
+          country: "Germany"
+        },
+        email: "test@test.com"
+      },
+      deliveryMethod: "fastest"
+    };
+    axios
+      .post("/orders.json", order)
+      .then(response => {
+        this.setState({ loading: false, purchasing: false });
+      })
+      .catch(error => {
+        this.setState({ loading: false, purchasing: false });
+      });
+  };
+
   render() {
-    //creating a copy of our ingredients Object in disabled Info
     const disabledInfo = {
       ...this.state.ingredients
     };
-    //loop through every key of disabledInfo
     for (let key in disabledInfo) {
-      //it is the value of each KEY , check returns true or false so updates this
-      //in our copied object with true or false
       disabledInfo[key] = disabledInfo[key] <= 0;
     }
-    //{salad: true, meat: false, ...}
-
     let orderSummary = null;
-    let burger = <Spinner />;
+    let burger = this.state.error ? (
+      <p>Ingredients can't be loaded!</p>
+    ) : (
+      <Spinner />
+    );
 
     if (this.state.ingredients) {
       burger = (
-        <>
+        <Aux>
           <Burger ingredients={this.state.ingredients} />
           <BuildControls
             ingredientAdded={this.addIngredientHandler}
-            ingredientRemoved={this.removeIngredienthandler}
+            ingredientRemoved={this.removeIngredientHandler}
             disabled={disabledInfo}
-            price={this.state.totalPrice}
-            purchaseable={this.state.purchaseable}
+            purchasable={this.state.purchasable}
             ordered={this.purchaseHandler}
+            price={this.state.totalPrice}
           />
-        </>
+        </Aux>
       );
       orderSummary = (
         <OrderSummary
           ingredients={this.state.ingredients}
-          continue={this.purchaseContinueHandler}
-          cancel={this.purchaseCancelHandler}
           price={this.state.totalPrice}
+          purchaseCancelled={this.purchaseCancelHandler}
+          purchaseContinued={this.purchaseContinueHandler}
         />
       );
     }
-
     if (this.state.loading) {
-      //then show spinner
       orderSummary = <Spinner />;
     }
-
+    // {salad: true, meat: false, ...}
     return (
       <Aux>
         <Modal
