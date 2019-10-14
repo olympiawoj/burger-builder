@@ -31,6 +31,7 @@ class BurgerBuilder extends Component {
   };
 
   componentDidMount() {
+    console.log(this.props)
     axios
       .get("https://olympias-burger-app.firebaseio.com/ingredients.json")
       .then(response => {
@@ -92,30 +93,31 @@ class BurgerBuilder extends Component {
   };
 
   purchaseContinueHandler = () => {
+    this.props.history.push("/checkout")
     // alert('You continue!');
-    this.setState({ loading: true });
-    const order = {
-      ingredients: this.state.ingredients,
-      price: this.state.totalPrice,
-      customer: {
-        name: "Max Schwarzmüller",
-        address: {
-          street: "Teststreet 1",
-          zipCode: "41351",
-          country: "Germany"
-        },
-        email: "test@test.com"
-      },
-      deliveryMethod: "fastest"
-    };
-    axios
-      .post("/orders.json", order)
-      .then(response => {
-        this.setState({ loading: false, purchasing: false });
-      })
-      .catch(error => {
-        this.setState({ loading: false, purchasing: false });
-      });
+    //   this.setState({ loading: true });
+    //   const order = {
+    //     ingredients: this.state.ingredients,
+    //     price: this.state.totalPrice,
+    //     customer: {
+    //       name: "Max Schwarzmüller",
+    //       address: {
+    //         street: "Teststreet 1",
+    //         zipCode: "41351",
+    //         country: "Germany"
+    //       },
+    //       email: "test@test.com"
+    //     },
+    //     deliveryMethod: "fastest"
+    //   };
+    //   axios
+    //     .post("/orders.json", order)
+    //     .then(response => {
+    //       this.setState({ loading: false, purchasing: false });
+    //     })
+    //     .catch(error => {
+    //       this.setState({ loading: false, purchasing: false });
+    //     });
   };
 
   render() {
@@ -129,8 +131,8 @@ class BurgerBuilder extends Component {
     let burger = this.state.error ? (
       <p>Ingredients can't be loaded!</p>
     ) : (
-      <Spinner />
-    );
+        <Spinner />
+      );
 
     if (this.state.ingredients) {
       burger = (
