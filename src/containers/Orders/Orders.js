@@ -31,8 +31,9 @@ class Orders extends Component {
             //what do we wanna render? output Orders - create new component, the Order component itself
             //orders neeeded are fetched from bacekend
             <div>
-                <Order />
-                <Order />
+                {this.state.orders.map(order => {
+                    return (<Order key={order.id} ingredients={order.ingredients} price={order.price} />)
+                })}
             </div>
         )
     }
