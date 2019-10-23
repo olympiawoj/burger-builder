@@ -81,6 +81,17 @@ class ContactData extends Component {
 
     }
 
+    inputChangedHandler = (event, inputIdentifier) => {
+        // [e.target.name] = e.target.value
+        //create copy of form data
+        const updatedOrderForm = { ...this.state.orderForm }
+        //email or delivery method, get access to inner object
+        const updatedFormElement = { ...updatedOrderForm[inputIdentifier] }
+        updatedFormElement.value = event.target.value
+        updatedOrderForm[inputIdentifier] = updatedFormElement
+        this.setState({ orderForm: updatedOrderForm })
+    }
+
     //turn orderFOrm object into something that we can loop through
     render() {
         const formElementsArray = []
@@ -95,8 +106,7 @@ class ContactData extends Component {
         let form = (
             <form>
                 {formElementsArray.map((formElement) => (
-                    <Input key={formElement.id} elementType={formElement.config.elementType} elementConfig={formElement.config.elementConfig} value={formElement.config.value} />
-
+                    <Input changed={(event) => this.inputChangedHandler(event, formElement.id)} key={formElement.id} elementType={formElement.config.elementType} elementConfig={formElement.config.elementConfig} value={formElement.config.value} />
                 ))}
                 <Button btnType="Success" clicked={this.orderHandler}>ORDER</Button>
             </form>
