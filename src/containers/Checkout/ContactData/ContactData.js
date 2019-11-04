@@ -61,13 +61,17 @@ class ContactData extends Component {
         //with ingredients being passed from Checkout via props, submitting request is easy
         alert('You continue!');
         this.setState({ loading: true });
+
+        //get name and value directly mapped to eachother
+        const formData = {};
+        for (let formElementIdentifer in this.state.orderForm) {
+            formData[formElementIdentifer] = this.state.orderForm[formElementIdentifer].value
+        }
+
         const order = {
             ingredients: this.props.ingredients,
             price: this.props.price,
-            customer: {
-
-            },
-            deliveryMethod: "fastest"
+            orderData: formData,
         };
         axios
             .post("/orders.json", order)
@@ -104,11 +108,11 @@ class ContactData extends Component {
         console.log(formElementsArray, 'form')
 
         let form = (
-            <form>
+            <form onSubmit={this.orderHandler}>
                 {formElementsArray.map((formElement) => (
                     <Input changed={(event) => this.inputChangedHandler(event, formElement.id)} key={formElement.id} elementType={formElement.config.elementType} elementConfig={formElement.config.elementConfig} value={formElement.config.value} />
                 ))}
-                <Button btnType="Success" clicked={this.orderHandler}>ORDER</Button>
+                <Button btnType="Success" >ORDER</Button>
             </form>
         );
         if (this.state.loading) {
