@@ -14,35 +14,57 @@ class ContactData extends Component {
                 elementConfig: {
                     type: 'text', placeholder: "Your Name"
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false
             },
             street: {
                 elementType: 'input',
                 elementConfig: {
                     type: 'text', placeholder: "Street"
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false
             },
             zipCode: {
                 elementType: 'input',
                 elementConfig: {
                     type: 'text', placeholder: "ZIP"
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false
             },
             country: {
                 elementType: 'input',
                 elementConfig: {
                     type: 'text', placeholder: "Country"
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false
             },
             email: {
                 elementType: 'input',
                 elementConfig: {
                     type: 'email', placeholder: "Your Email"
                 },
-                value: ''
+                value: '',
+                validation: {
+                    required: true,
+                    minLength: 5,
+                    maxLength: 5
+                },
+                valid: false
             },
             deliveryMethod: {
                 elementType: 'select',
@@ -54,10 +76,11 @@ class ContactData extends Component {
         }
     }
 
+
     orderHandler = (e) => {
         //since this is a form, prevent default which is to send req and reload page
         e.preventDefault();
-        console.log('ingredients', this.props.ingredients)
+        // console.log('ingredients', this.props.ingredients)
         //with ingredients being passed from Checkout via props, submitting request is easy
         alert('You continue!');
         this.setState({ loading: true });
@@ -85,6 +108,26 @@ class ContactData extends Component {
 
     }
 
+    // Returns true or false determining whether valid or not
+
+    checkValidity = (value, rules) => {
+        let isValid = false;
+        if (rules.required) {
+            isValid = value.trim() !== "";
+        }
+
+        if (rules.minLength) {
+            isValid = value.length >= rules.minLength
+        }
+        //only last rule satisfied to turn isValid to true
+        if (rules.maxLength) {
+            isValid = value.length <= rules.maxLength
+        }
+
+        return isValid;
+    }
+
+    //We also check for validity here
     inputChangedHandler = (event, inputIdentifier) => {
         // [e.target.name] = e.target.value
         //create copy of form data
@@ -92,6 +135,10 @@ class ContactData extends Component {
         //email or delivery method, get access to inner object
         const updatedFormElement = { ...updatedOrderForm[inputIdentifier] }
         updatedFormElement.value = event.target.value
+        //update valid value
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation)
+
+        console.log(updatedFormElement)
         updatedOrderForm[inputIdentifier] = updatedFormElement
         this.setState({ orderForm: updatedOrderForm })
     }
