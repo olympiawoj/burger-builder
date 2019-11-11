@@ -22,8 +22,10 @@ class BurgerBuilder extends Component {
   //     this.state = {...}
   // }
   state = {
+    //would manage these two in Redux
     ingredients: null,
     totalPrice: 4,
+    //local UI state - use to show loading modal  
     purchasable: false,
     purchasing: false,
     loading: false,
