@@ -33,7 +33,8 @@ const reducer = (state = initialState, action) => {
                     //ingredientName we get as paylaod from our action, one which we receive as payload will receive a new value
                     [action.ingredientName]: state.ingredients[action.ingredientName] + 1
 
-                }
+                },
+                totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName]
             }
 
         case (actionTypes.REMOVE_INGREDIENT):
@@ -42,7 +43,8 @@ const reducer = (state = initialState, action) => {
                 ingredients: {
                     ...state.ingredients,
                     [action.ingredientName]: state.ingredients[action.ingredientName] - 1
-                }
+                },
+                totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName]
             }
         default:
             return state;
