@@ -10,7 +10,7 @@ import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import axios from "../../axios-orders";
 import { connect } from "react-redux"
 // import * as actionTypes from "../../store/actions/actionTypes"
-import * as burgerBuilderActions from "../../store/actions/burgerBuilder"
+import * as actions from "../../store/actions"
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -70,7 +70,7 @@ class BurgerBuilder extends Component {
     // }
     // queryParams.push('price=' + this.state.totalPrice);
     // const queryString = queryParams.join('&')
-
+    this.props.onInitPurchased();
 
     this.props.history.push(
       "/checkout",
@@ -135,9 +135,9 @@ class BurgerBuilder extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    ings: state.ingredients,
-    price: state.totalPrice,
-    error: state.error
+    ings: state.burgerBuilder.ingredients,
+    price: state.burgerBuilder.totalPrice,
+    error: state.burgerBuilder.error
   }
 
 }
@@ -145,9 +145,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     //we need to pass ingredient name along with type, so we expect to get ingName in this function
-    onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
-    onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName)),
-    onInitIngredients: () => dispatch(burgerBuilderActions.initIngredients())
+    onIngredientAdded: (ingName) => dispatch(actions.addIngredient(ingName)),
+    onIngredientRemoved: (ingName) => dispatch(actions.removeIngredient(ingName)),
+    onInitIngredients: () => dispatch(actions.initIngredients()),
+    onInitPurchased: () => dispatch(actions.purchaseInit())
   }
 }
 

@@ -1,3 +1,3 @@
 //Group exports
 export { addIngredient, removeIngredient, initIngredients } from "./burgerBuilder"
-export { } from "./order"
+export { purchaseBurger, purchaseBurgerFail, purchaseInit, fetchOrders } from "./order"
