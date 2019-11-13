@@ -9,7 +9,8 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import axios from "../../axios-orders";
 import { connect } from "react-redux"
-import * as actionTypes from "../../store/actions"
+// import * as actionTypes from "../../store/actions/actionTypes"
+import * as burgerBuilderActions from "../../store/actions/index"
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -143,8 +144,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     //we need to pass ingredient name along with type, so we expect to get ingName in this function
-    onIngredientAdded: (ingName) => dispatch({ type: actionTypes.ADD_INGREDIENT, ingredientName: ingName }),
-    onIngredientRemoved: (ingName) => dispatch({ type: actionTypes.REMOVE_INGREDIENT, ingredientName: ingName }),
+    onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
+    onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName)),
   }
 }
 
