@@ -3,13 +3,9 @@ import * as actionTypes from "../actions/actionTypes"
 const initialState = {
     //ingredients- to add ingredients, add in ingredient object - we start w/ null b/c in CDM we actually load our starting ingredients from the internet. We'll re-add this, but for now we'll ignore the axios
 
-    ingredients: {
-        salad: 0,
-        bacon: 0,
-        cheese: 0,
-        meat: 0
-    },
-    totalPrice: 4
+    ingredients: null,
+    totalPrice: 4,
+    error: false
 }
 
 const INGREDIENT_PRICES = {

@@ -10,7 +10,7 @@ import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import axios from "../../axios-orders";
 import { connect } from "react-redux"
 // import * as actionTypes from "../../store/actions/actionTypes"
-import * as burgerBuilderActions from "../../store/actions/index"
+import * as burgerBuilderActions from "../../store/actions/burgerBuilder"
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -28,8 +28,7 @@ class BurgerBuilder extends Component {
     //would manage these two in Redux
     //local UI state - use to show loading modal  
     purchasing: false,
-    loading: false,
-    error: false
+
   };
 
   componentDidMount() {
@@ -79,13 +78,16 @@ class BurgerBuilder extends Component {
   };
 
   render() {
+
     const disabledInfo = {
       ...this.state.ings
     };
+
     for (let key in disabledInfo) {
       disabledInfo[key] = disabledInfo[key] <= 0;
     }
     let orderSummary = null;
+
     let burger = this.state.error ? (
       <p>Ingredients can't be loaded!</p>
     ) : (
@@ -115,10 +117,7 @@ class BurgerBuilder extends Component {
         />
       );
     }
-    if (this.state.loading) {
-      orderSummary = <Spinner />;
-    }
-    // {salad: true, meat: false, ...}
+
     return (
       <Aux>
         <Modal
