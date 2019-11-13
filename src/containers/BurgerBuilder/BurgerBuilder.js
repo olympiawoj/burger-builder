@@ -34,13 +34,14 @@ class BurgerBuilder extends Component {
   componentDidMount() {
     console.log(this.props)
     // axios
-    //   .get("https://olympias-burger-app.firebaseio.com/ingredients.json")
+    //   .get("https://olympias-burger-app.firebaseio.com/ingredients.jsom")
     //   .then(response => {
     //     this.setState({ ingredients: response.data });
     //   })
     //   .catch(error => {
     //     this.setState({ error: true });
     //   });
+    this.props.onInitIngredients();
   }
 
   updatePurchaseState(ingredients) {
@@ -88,7 +89,7 @@ class BurgerBuilder extends Component {
     }
     let orderSummary = null;
 
-    let burger = this.state.error ? (
+    let burger = this.props.error ? (
       <p>Ingredients can't be loaded!</p>
     ) : (
         <Spinner />
@@ -135,7 +136,8 @@ class BurgerBuilder extends Component {
 const mapStateToProps = (state) => {
   return {
     ings: state.ingredients,
-    price: state.totalPrice
+    price: state.totalPrice,
+    error: state.error
   }
 
 }
@@ -145,6 +147,7 @@ const mapDispatchToProps = (dispatch) => {
     //we need to pass ingredient name along with type, so we expect to get ingName in this function
     onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
     onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName)),
+    onInitIngredients: () => dispatch(burgerBuilderActions.initIngredients())
   }
 }
 
