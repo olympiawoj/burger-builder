@@ -30,7 +30,7 @@ export const authFail = (error) => {
 
 //Async Auth action creators - and then return dispatch, a function which gets passed as an arg due to redux thunk & in there, authenticate the user
 //Data we need to post can be found in docs - pass JS object which wil be transofmred to JSON by axioa tuo - which has an email, passoword, and returnSecureToken property, a boolean which idicates whehter we want to recieve a token or not
-export const auth = (email, password) => {
+export const auth = (email, password, isSignUp) => {
     return dispatch => {
         dispatch(authStart())
 
@@ -41,6 +41,10 @@ export const auth = (email, password) => {
         }
 
         let url = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBicRkQHAct3IYOS7NjEPSH1xEHS8EmrVQ"
+
+        if (!isSignUp) {
+            url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBicRkQHAct3IYOS7NjEPSH1xEHS8EmrVQ"
+        }
 
         axios.post(url, authData)
             .then((res) => {
