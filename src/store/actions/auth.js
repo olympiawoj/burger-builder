@@ -27,6 +27,22 @@ export const authFail = (error) => {
         error: error
     }
 }
+//logout wil be a synchronous action creator, which will return an action type AUTH_LOGOUT I'll create, 
+export const logout = () => {
+    return {
+        type: actionTypes.AUTH_LOGOUT
+    }
+}
+export const checkAuthTimeout = (expirationTime) => {
+    return dispatch => {
+        //execute function after certain amount of time, execute function logout , call dispatch after expiration time to call logout action
+        //Execute function which returns the action which is actually dispatched
+        setTimeout(() => {
+            dispatch(logout())
+            //milliseconds to real seconds
+        }, expirationTime * 1000)
+    }
+}
 
 
 //Async Auth action creators - and then return dispatch, a function which gets passed as an arg due to redux thunk & in there, authenticate the user
@@ -52,6 +68,7 @@ export const auth = (email, password, isSignUp) => {
                 console.log(res)
                 //pass on idToken and userId
                 dispatch(authSuccess(res.data.idToken, res.data.localId))
+                dispatch(checkAuthTimeout(res.data.expiresIn))
             })
             .catch((err) => {
                 console.log(err)
