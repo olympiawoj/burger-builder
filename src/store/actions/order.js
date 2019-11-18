@@ -27,12 +27,12 @@ export const purchaseBurgerFail = (error) => {
 }
 
 //Asynchronous action creators - action we dispatch when we click order button. This has our async code which does NOT return an action.
-export const purchaseBurger = (orderData) => {
+export const purchaseBurger = (orderData, token) => {
     return dispatch => {
         //exec wrapped in dispatch so that Action returned to purchaseBurgerStart is dispatched to the store
         dispatch(purchaseBurgerStart())
         axios
-            .post("/orders.json", orderData)
+            .post("/orders.json?auth=" + token, orderData)
             .then(response => {
                 console.log(response.data)
                 dispatch(purchaseBurgerSuccess(response.data.name, orderData))
@@ -72,11 +72,11 @@ export const fetchOrdersStart = () => {
 }
 
 
-export const fetchOrders = () => {
+export const fetchOrders = (token) => {
     //axios get get orders, but first return a functino which vgets dispatched
-    return dispatch => {
+    return (dispatch) => {
         dispatch(fetchOrdersStart())
-        axios.get('/orders.json')
+        axios.get('/orders.json?auth=' + token)
             .then(res => {
                 //res.data holds the data that we get back from firebase, a JS object where keys are unique ids that firebase generates for us, values are individually data
                 //we want to turn orders object into an array
