@@ -17,6 +17,7 @@ const authStart = (state, action) => {
 
 //In a success case, set token, ID, error, and loading
 const authSuccess = (state, action) => {
+    console.log('auth success', action.idToken, action.userId)
     return updateObject(state, {
         token: action.idToken,
         userId: action.userId,

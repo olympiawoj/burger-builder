@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+
+import { connect } from "react-redux"
 //without .js bc our build workflow adds file extn
 import Aux from "../Aux";
 import Toolbar from "../../components/Navigation/Toolbar/Toolbar";
@@ -27,11 +29,18 @@ class Layout extends Component {
     });
   };
 
+
+
   render() {
+    console.log('is authenticated', this.props.isAuthenticated)
     return (
+
       <Aux>
-        <Toolbar toggle={this.sideDrawerToggleHandler} />
+        <Toolbar
+          toggle={this.sideDrawerToggleHandler}
+          isAuth={this.props.isAuthenticated} />
         <SideDrawer
+          isAuth={this.props.isAuthenticated}
           closed={this.sideDrawerClosedHandler}
           open={this.state.showSideDrawer}
         />
@@ -40,4 +49,16 @@ class Layout extends Component {
     );
   }
 }
-export default Layout;
+
+//look at our auth reducer to see if we have relevant info, if the token is not null, the user is authenticated
+
+const mapStateToProps = (state) => {
+  return {
+    isAuthenticated: state.auth.token !== null
+  }
+}
+
+
+export default connect(mapStateToProps)(Layout);
+
+

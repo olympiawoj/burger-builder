@@ -3,6 +3,9 @@ import classes from "./NavigationItems.module.css";
 import NavigationItem from "./NavigationItem/NavigationItem";
 
 const NavigationItems = props => {
+  console.log(
+    "Nav item props", props
+  )
   return (
     <ul className={classes.NavigationItems}>
       {/* pass exact as prop to NavItme*/}
@@ -10,7 +13,9 @@ const NavigationItems = props => {
         BurgerBuilder
       </NavigationItem>
       <NavigationItem link="/orders">Orders</NavigationItem>
-      <NavigationItem link="/auth">Auth</NavigationItem>
+      {props.isAuth ?
+        <NavigationItem link="/logout">Logout</NavigationItem> : <NavigationItem link="/auth">Auth</NavigationItem>}
+
     </ul>
   );
 };
