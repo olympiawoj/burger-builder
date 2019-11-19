@@ -33,7 +33,7 @@ const fetchOrdersStart = (state, action) => {
     return updateObject(state, { loading: true })
 }
 
-const feetchOrdersSuccess = (state, action) => {
+const fetchOrdersSuccess = (state, action) => {
     return updateObject(state, {
         orders: action.orders,
         loading: false
@@ -90,7 +90,7 @@ const reducer = (state = initialState, action) => {
         //     ...state,
         //     loading: true
         // }
-        case actionTypes.FETCH_ORDERS_SUCCESS: return feetchOrdersSuccess(state, action)
+        case actionTypes.FETCH_ORDERS_SUCCESS: return fetchOrdersSuccess(state, action)
 
 
         // return {

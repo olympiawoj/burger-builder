@@ -80,7 +80,7 @@ export const fetchOrders = (token) => {
             .then(res => {
                 //res.data holds the data that we get back from firebase, a JS object where keys are unique ids that firebase generates for us, values are individually data
                 //we want to turn orders object into an array
-                console.log(res.data)
+                console.log('Fetch Orders res.data', res.data)
                 const fetchedOrders = [];
                 for (let key in res.data) {
                     //push res.data for a given key

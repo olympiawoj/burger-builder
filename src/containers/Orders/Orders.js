@@ -31,6 +31,7 @@ class Orders extends Component {
 }
 
 const mapStateToProps = state => {
+    console.log("orders state", state)
     return {
         //reaching out to order reducer and then orders prop
         orders: state.order.orders,
