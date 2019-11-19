@@ -36,6 +36,8 @@ export const logout = () => {
         type: actionTypes.AUTH_LOGOUT
     }
 }
+
+//checkAuthTimeout, passing diff between 
 export const checkAuthTimeout = (expirationTime) => {
     return dispatch => {
         //execute function after certain amount of time, execute function logout , call dispatch after expiration time to call logout action
@@ -100,13 +102,15 @@ export const setAuthRedirectPath = (path) => {
 export const authCheckState = () => {
     return dispatch => {
         const token = localStorage.getItem("token")
+        console.log('getting th token', token)
         if (!token) {
             dispatch(logout())
         } else {
             //what we retrieve from localStorage ia s tring, newDate converts into date
             const expirationDate = new Date(localStorage.getItem("expirationDate"))
             //use both pieces of info, dispatch authsuccess action creator b/c i know we're logged in, but only want to do this if we haven't passed expiry date
-            if (expirationDate > new Date()) {
+            //If expiration date is smaller or equal to current date, logout
+            if (expirationDate < new Date()) {
                 dispatch(logout())
             } else {
                 // if we're logged in, can get userId
@@ -114,7 +118,8 @@ export const authCheckState = () => {
                 dispatch(authSuccess(token, userId))
                 //arg is amount of seconds until we should be logged, out, expiration date is the TIME we are logged out, not the amount of seconds
                 //Future date in seconds minus current date in seconds , diff is the expiry date
-                dispatch(checkAuthTimeout(expirationDate.getSeconds() - new Date().getSeconds()))
+                //Divide by 1000 gives us in seconds
+                dispatch(checkAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000))
             }
         }
     }
