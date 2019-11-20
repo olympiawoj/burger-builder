@@ -70,7 +70,7 @@ export const auth = (email, password, isSignUp) => {
 
         axios.post(url, authData)
             .then((res) => {
-                console.log(res)
+                console.log('authrespose', res)
                 // * 1000 b/c JS time works in milliseconds & time we got was in seconds
                 //getTime turns into a time, then to turn into an object again wrap into newDate
                 const expirationDate = new Date(new Date().getTime() + res.data.expiresIn * 1000)

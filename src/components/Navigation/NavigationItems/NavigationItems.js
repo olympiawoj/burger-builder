@@ -3,9 +3,7 @@ import classes from "./NavigationItems.module.css";
 import NavigationItem from "./NavigationItem/NavigationItem";
 
 const NavigationItems = props => {
-  console.log(
-    "Nav item props", props
-  )
+
   return (
     <ul className={classes.NavigationItems}>
       {/* pass exact as prop to NavItme*/}
