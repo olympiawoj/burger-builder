@@ -72,11 +72,12 @@ export const fetchOrdersStart = () => {
 }
 
 
-export const fetchOrders = (token) => {
+export const fetchOrders = (token, userId) => {
     //axios get get orders, but first return a functino which vgets dispatched
     return (dispatch) => {
         dispatch(fetchOrdersStart())
-        axios.get('/orders.json?auth=' + token)
+        const queryParams = '?auth=' + token + '&orderBy="userId"&equalTo="' + userId + '"';
+        axios.get('/orders.json' + queryParams)
             .then(res => {
                 //res.data holds the data that we get back from firebase, a JS object where keys are unique ids that firebase generates for us, values are individually data
                 //we want to turn orders object into an array
