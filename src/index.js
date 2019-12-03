@@ -22,20 +22,26 @@ const logger = (store) => {
     }
 }
 
-const composeEnhancers =
-    typeof window === 'object' &&
-        window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-        window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-            // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-        }) : compose;
+// const composeEnhancers =
+//     typeof window === 'object' &&
+//         window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+//         window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+//             // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
+//         }) : compose;
 
+
+const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null || compose;
 
 const enhancer = composeEnhancers(
     applyMiddleware(thunk),
     // other store enhancers if any
 );
 
-const rootReducer = combineReducers({ burgerBuilder: burgerBuilderReducer, order: orderReducer, auth: authReducer })
+const rootReducer = combineReducers({
+    burgerBuilder: burgerBuilderReducer,
+    order: orderReducer,
+    auth: authReducer
+})
 
 const store = createStore(rootReducer, enhancer)
 
