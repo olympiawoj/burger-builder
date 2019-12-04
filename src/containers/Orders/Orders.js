@@ -2,40 +2,49 @@ import React, { Component } from "react"
 import Order from "../../components/Order/Order"
 import axios from "../../axios-orders"
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler"
+import * as actions from "../../store/actions/index"
+import { connect } from "react-redux"
+import Spinner from "../../components/UI/Spinner/Spinner"
 
 class Orders extends Component {
-    state = {
-        orders: [],
-        loading: true,
-    };
 
     componentDidMount() {
-        axios.get('/orders.json')
-            .then(res => {
-                //res.data holds the data that we get back from firebase, a JS object where keys are unique ids that firebase generates for us, values are individually data
-                //we want to turn orders object into an array
-                console.log(res.data)
-                const fetchedOrders = [];
-                for (let key in res.data) {
-                    //push res.data for a given key
-                    //id is the key created by firebase
-                    fetchedOrders.push({ ...res.data[key], id: key })
-
-                }
-                this.setState({ loading: false, orders: fetchedOrders })
-            })
-            .catch(error => this.setState({ loading: false }))
+        this.props.onFetchOrders(this.props.token, this.props.userId)
     }
+
     render() {
+
+        let orders = <Spinner />
+        if (!this.props.loading) {
+            orders = this.props.orders.map(order => {
+                return (<Order key={order.id} ingredients={order.ingredients} price={order.price} />)
+            })
+        }
         return (
             //what do we wanna render? output Orders - create new component, the Order component itself
             //orders neeeded are fetched from bacekend
             <div>
-                {this.state.orders.map(order => {
-                    return (<Order key={order.id} ingredients={order.ingredients} price={order.price} />)
-                })}
+                {orders}
             </div>
         )
     }
 }
-export default withErrorHandler(Orders, axios)
+
+const mapStateToProps = state => {
+    console.log("orders state", state)
+    return {
+        //reaching out to order reducer and then orders prop
+        orders: state.order.orders,
+        loading: state.order.loading,
+        token: state.auth.token,
+        userId: state.auth.userId
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onFetchOrders: (token, userId) => dispatch(actions.fetchOrders(token, userId))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(Orders, axios))

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Route } from "react-router-dom"
+import { Route, Redirect } from "react-router-dom"
 import CheckoutSummary from "../../components/Order/CheckoutSummary";
 import ContactData from "./ContactData/ContactData"
 import { connect } from "react-redux"
@@ -26,6 +26,8 @@ class Checkout extends Component {
   //   this.setState({ ingredients: ingredients, totalPrice: price })
   // }
 
+
+
   checkoutCancelledHandler = () => {
     this.props.history.goBack()
   }
@@ -36,18 +38,30 @@ class Checkout extends Component {
   }
 
   render() {
+    //this is my redirect
+    let summary = <Redirect to="/" />
+    if (this.props.ings) {
+      const purchasedRedirect = this.props.purchased ? <Redirect to="/" /> : null;
+      summary = (
+        <>
+          {purchasedRedirect}
+          <CheckoutSummary ingredients={this.props.ings}
+            checkoutCancelled={this.checkoutCancelledHandler} checkoutContinued={this.checkoutContinuedHandler} />
+          <Route path={this.props.match.path + "/contact-data"} component={ContactData} />
+        </>);
+    }
+
     return (
       //if used w React Router, need div
       //checkoutSummary expects to get ingredients as a prop
       //start w/ dummy data and use routing to pass ingredients late
       <div>
-        <CheckoutSummary ingredients={this.props.ings}
-          checkoutCancelled={this.checkoutCancelledHandler} checkoutContinued={this.checkoutContinuedHandler} />
+        {summary}
         {/*may  use match.url or match.path & it should be all part of dynamic part */}
         {/* <Route path={this.props.match.path + "/contact-data"} component={ContactData}></Route> */}
 
         {/* Thanks to redux store, we don't need price so we can get ri dof price prop and render method*/}
-        <Route path={this.props.match.path + "/contact-data"} component={ContactData} />
+
       </div>
     );
   }
@@ -55,9 +69,12 @@ class Checkout extends Component {
 
 const mapStateToProps = state => {
   return {
-    ings: state.ingredients,
-    price: state.totalPrice
+    ings: state.burgerBuilder.ingredients,
+    price: state.burgerBuilder.totalPrice,
+    purchased: state.order.purchased
   }
 }
 
-export default connect(mapStateToProps, null)(Checkout);
+
+
+export default connect(mapStateToProps)(Checkout);

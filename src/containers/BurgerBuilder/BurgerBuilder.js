@@ -9,7 +9,8 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import axios from "../../axios-orders";
 import { connect } from "react-redux"
-import * as actionTypes from "../../store/actions"
+// import * as actionTypes from "../../store/actions/actionTypes"
+import * as actions from "../../store/actions"
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -27,20 +28,20 @@ class BurgerBuilder extends Component {
     //would manage these two in Redux
     //local UI state - use to show loading modal  
     purchasing: false,
-    loading: false,
-    error: false
+
   };
 
   componentDidMount() {
-    console.log(this.props)
+    // console.log(this.props)
     // axios
-    //   .get("https://olympias-burger-app.firebaseio.com/ingredients.json")
+    //   .get("https://olympias-burger-app.firebaseio.com/ingredients.jsom")
     //   .then(response => {
     //     this.setState({ ingredients: response.data });
     //   })
     //   .catch(error => {
     //     this.setState({ error: true });
     //   });
+    this.props.onInitIngredients();
   }
 
   updatePurchaseState(ingredients) {
@@ -54,8 +55,17 @@ class BurgerBuilder extends Component {
     return sum > 0;
   }
 
+  //shows us modal by setting purchasing to true, only wanna do if we're autheneticated otherwiser redirect
   purchaseHandler = () => {
-    this.setState({ purchasing: true });
+    if (this.props.isAuthenticated) {
+      this.setState({ purchasing: true });
+    } else {
+      //right before we redirect to auth page, we set it to "/checkout" bc its where user should go after
+      this.props.onSetRedirectPath("/checkout")
+      //use history prop to push user to /auth  page
+      this.props.history.push("/auth")
+    }
+    //
   };
 
   purchaseCancelHandler = () => {
@@ -69,7 +79,7 @@ class BurgerBuilder extends Component {
     // }
     // queryParams.push('price=' + this.state.totalPrice);
     // const queryString = queryParams.join('&')
-
+    this.props.onInitPurchased();
 
     this.props.history.push(
       "/checkout",
@@ -78,14 +88,17 @@ class BurgerBuilder extends Component {
   };
 
   render() {
+
     const disabledInfo = {
       ...this.state.ings
     };
+
     for (let key in disabledInfo) {
       disabledInfo[key] = disabledInfo[key] <= 0;
     }
     let orderSummary = null;
-    let burger = this.state.error ? (
+
+    let burger = this.props.error ? (
       <p>Ingredients can't be loaded!</p>
     ) : (
         <Spinner />
@@ -96,6 +109,7 @@ class BurgerBuilder extends Component {
         <Aux>
           <Burger ingredients={this.props.ings} />
           <BuildControls
+            isAuth={this.props.isAuthenticated}
             ingredientAdded={this.props.onIngredientAdded}
             ingredientRemoved={this.props.onIngredientRemoved}
             disabled={disabledInfo}
@@ -114,10 +128,7 @@ class BurgerBuilder extends Component {
         />
       );
     }
-    if (this.state.loading) {
-      orderSummary = <Spinner />;
-    }
-    // {salad: true, meat: false, ...}
+
     return (
       <Aux>
         <Modal
@@ -134,8 +145,10 @@ class BurgerBuilder extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    ings: state.ingredients,
-    price: state.totalPrice
+    ings: state.burgerBuilder.ingredients,
+    price: state.burgerBuilder.totalPrice,
+    error: state.burgerBuilder.error,
+    isAuthenticated: state.auth.token !== null
   }
 
 }
@@ -143,8 +156,11 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     //we need to pass ingredient name along with type, so we expect to get ingName in this function
-    onIngredientAdded: (ingName) => dispatch({ type: actionTypes.ADD_INGREDIENT, ingredientName: ingName }),
-    onIngredientRemoved: (ingName) => dispatch({ type: actionTypes.REMOVE_INGREDIENT, ingredientName: ingName }),
+    onIngredientAdded: (ingName) => dispatch(actions.addIngredient(ingName)),
+    onIngredientRemoved: (ingName) => dispatch(actions.removeIngredient(ingName)),
+    onInitIngredients: () => dispatch(actions.initIngredients()),
+    onInitPurchased: () => dispatch(actions.purchaseInit()),
+    onSetRedirectPath: (path) => dispatch(actions.setAuthRedirectPath(path))
   }
 }
 

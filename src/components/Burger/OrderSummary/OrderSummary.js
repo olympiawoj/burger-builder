@@ -6,7 +6,7 @@ class OrderSummary extends Component {
   //this could be a functional component, but we made it a class for lifecycle hooks
 
   componentWillUpdate() {
-    console.log("OrderSummary will update");
+    // console.log("OrderSummary will update");
   }
   render() {
     const ingredientSummary = Object.keys(this.props.ingredients).map(
