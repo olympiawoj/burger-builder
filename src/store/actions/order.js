@@ -34,7 +34,7 @@ export const purchaseBurger = (orderData, token) => {
         axios
             .post("/orders.json?auth=" + token, orderData)
             .then(response => {
-                console.log(response.data)
+                // console.log(response.data)
                 dispatch(purchaseBurgerSuccess(response.data.name, orderData))
 
             })
@@ -81,7 +81,7 @@ export const fetchOrders = (token, userId) => {
             .then(res => {
                 //res.data holds the data that we get back from firebase, a JS object where keys are unique ids that firebase generates for us, values are individually data
                 //we want to turn orders object into an array
-                console.log('Fetch Orders res.data', res.data)
+                // console.log('Fetch Orders res.data', res.data)
                 const fetchedOrders = [];
                 for (let key in res.data) {
                     //push res.data for a given key

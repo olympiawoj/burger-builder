@@ -70,7 +70,7 @@ export const auth = (email, password, isSignUp) => {
 
         axios.post(url, authData)
             .then((res) => {
-                console.log('authrespose', res)
+                // console.log('authrespose', res)
                 // * 1000 b/c JS time works in milliseconds & time we got was in seconds
                 //getTime turns into a time, then to turn into an object again wrap into newDate
                 const expirationDate = new Date(new Date().getTime() + res.data.expiresIn * 1000)
@@ -82,7 +82,7 @@ export const auth = (email, password, isSignUp) => {
                 dispatch(checkAuthTimeout(res.data.expiresIn))
             })
             .catch((err) => {
-                console.log(err)
+                // console.log(err)
                 dispatch(authFail(err.response.data.error))
             })
 
@@ -102,7 +102,7 @@ export const setAuthRedirectPath = (path) => {
 export const authCheckState = () => {
     return dispatch => {
         const token = localStorage.getItem("token")
-        console.log('getting th token', token)
+        // console.log('getting th token', token)
         if (!token) {
             dispatch(logout())
         } else {

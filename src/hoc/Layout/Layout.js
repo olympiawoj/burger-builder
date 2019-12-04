@@ -5,7 +5,7 @@ import Toolbar from "../../components/Navigation/Toolbar/Toolbar";
 import SideDrawer from "../../components/Navigation/SideDrawer/SideDrawer";
 import { connect } from "react-redux"
 import classes from "./Layout.module.css";
-import { PURCHASE_BURGER_SUCCESS } from "../../store/actions/actionTypes";
+
 
 //allows us to use layout component as a wrapper for core content we want to render to the screen
 
@@ -46,7 +46,7 @@ class Layout extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log("Layout state", state)
+  // console.log("Layout state", state)
   return {
     isAuthenticated: state.auth.token !== null
   }

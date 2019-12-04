@@ -32,7 +32,7 @@ class Layout extends Component {
 
 
   render() {
-    console.log('is authenticated', this.props.isAuthenticated)
+    // console.log('is authenticated', this.props.isAuthenticated)
     return (
 
       <Aux>
