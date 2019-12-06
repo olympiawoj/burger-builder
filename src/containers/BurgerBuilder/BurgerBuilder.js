@@ -1,13 +1,16 @@
-//rcc - class component shortcut w/ snippets
-//render is a lifecycle method - this is a must, where we need to return JSX code.
-
 import React, { Component } from "react";
+
+import Aux from "../../hoc/Aux/Aux";
 import Burger from "../../components/Burger/Burger";
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
 import Modal from "../../components/UI/Modal/Modal";
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
-
-import Aux from "../../hoc/Aux/Aux";
+import Spinner from "../../components/UI/Spinner/Spinner";
+import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
+import axios from "../../axios-orders";
+import { connect } from "react-redux"
+// import * as actionTypes from "../../store/actions/actionTypes"
+import * as actions from "../../store/actions"
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -16,98 +19,115 @@ const INGREDIENT_PRICES = {
   bacon: 0.7
 };
 
-class BurgerBuilder extends Component {
+export class BurgerBuilder extends Component {
+  // constructor(props) {
+  //     super(props);
+  //     this.state = {...}
+  // }
   state = {
-    ingredients: {
-      salad: 0,
-      bacon: 0,
-      cheese: 0,
-      meat: 0
-    },
-    totalPrice: 4,
-    purchaseable: false,
-    purchasing: false
+    //would manage these two in Redux
+    //local UI state - use to show loading modal  
+    purchasing: false,
+
   };
 
-  purchaseContinueHandler = () => {
-    alert("you can continue");
+  componentDidMount() {
+    // console.log(this.props)
+    // axios
+    //   .get("https://olympias-burger-app.firebaseio.com/ingredients.jsom")
+    //   .then(response => {
+    //     this.setState({ ingredients: response.data });
+    //   })
+    //   .catch(error => {
+    //     this.setState({ error: true });
+    //   });
+    this.props.onInitIngredients();
+  }
+
+  updatePurchaseState(ingredients) {
+    const sum = Object.keys(ingredients)
+      .map(igKey => {
+        return ingredients[igKey];
+      })
+      .reduce((sum, el) => {
+        return sum + el;
+      }, 0);
+    return sum > 0;
+  }
+
+  //shows us modal by setting purchasing to true, only wanna do if we're autheneticated otherwiser redirect
+  purchaseHandler = () => {
+    if (this.props.isAuthenticated) {
+      this.setState({ purchasing: true });
+    } else {
+      //right before we redirect to auth page, we set it to "/checkout" bc its where user should go after
+      this.props.onSetRedirectPath("/checkout")
+      //use history prop to push user to /auth  page
+      this.props.history.push("/auth")
+    }
+    //
   };
 
   purchaseCancelHandler = () => {
     this.setState({ purchasing: false });
   };
 
-  //should be triggered whenever user clicks order now button
-  purchaseHandler = () => {
-    this.setState({ purchasing: true });
-  };
+  purchaseContinueHandler = () => {
+    // const queryParams = []
+    // for (let i in this.state.ingredients) {
+    //   queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]))
+    // }
+    // queryParams.push('price=' + this.state.totalPrice);
+    // const queryString = queryParams.join('&')
+    this.props.onInitPurchased();
 
-  //call at end of add and remove ingredient handler to check whethre we should turn purchasable to true or false
-  updatePurchaseState = ingredients => {
-    //turn object into an array of these values here again
-    //creates array of string entries- salad, bacon, cheese, but I need amounts, not names
-    //we can map this array into the one we need
-    const sum = Object.keys(ingredients)
-      .map(igKey => {
-        //return the value for a given key - this will be the amount, accessing
-        //in object
-        return ingredients[igKey];
-      })
-      //now I have an array of values, all I need to do is then reduce array to sum
-      .reduce((sum, el) => {
-        return sum + el;
-      }, 0);
-    //sum > 0 is either true or false. Its true if we have at least1 ingredient, or else its false.
-    this.setState({ purchaseable: sum > 0 });
-  };
+    this.props.history.push(
+      "/checkout",
+    )
 
-  addIngredientHandler = type => {
-    const oldCount = this.state.ingredients[type];
-    const updatedCount = oldCount + 1;
-    const updatedIngredients = {
-      ...this.state.ingredients
-    };
-    updatedIngredients[type] = updatedCount;
-    const priceAddition = INGREDIENT_PRICES[type];
-    const oldPrice = this.state.totalPrice;
-    const newPrice = oldPrice + priceAddition;
-    this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
-    this.updatePurchaseState(updatedIngredients);
-  };
-
-  removeIngredienthandler = type => {
-    const oldCount = this.state.ingredients[type];
-    if (oldCount <= 0) {
-      return; //nothing happens
-    }
-    const updatedCount = oldCount - 1;
-    //create copy of ingredients in state
-    const updatedIngredients = {
-      ...this.state.ingredients
-    };
-    //update the count for this type
-    updatedIngredients[type] = updatedCount;
-    //find out how much to subtract
-    const priceSubtraction = INGREDIENT_PRICES[type];
-    const oldPrice = this.state.totalPrice;
-    //deduct price
-    const newPrice = oldPrice - priceSubtraction;
-    this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
-    this.updatePurchaseState(updatedIngredients);
   };
 
   render() {
-    //creating a copy of our ingredients Object in disabled Info
+
     const disabledInfo = {
-      ...this.state.ingredients
+      ...this.state.ings
     };
-    //loop through every key of disabledInfo
+
     for (let key in disabledInfo) {
-      //it is the value of each KEY , check returns true or false so updates this
-      //in our copied object with true or false
       disabledInfo[key] = disabledInfo[key] <= 0;
     }
-    //{salad: true, meat: false, ...}
+    let orderSummary = null;
+
+    let burger = this.props.error ? (
+      <p>Ingredients can't be loaded!</p>
+    ) : (
+        <Spinner />
+      );
+
+    if (this.props.ings) {
+      burger = (
+        <Aux>
+          <Burger ingredients={this.props.ings} />
+          <BuildControls
+            isAuth={this.props.isAuthenticated}
+            ingredientAdded={this.props.onIngredientAdded}
+            ingredientRemoved={this.props.onIngredientRemoved}
+            disabled={disabledInfo}
+            purchasable={this.updatePurchaseState(this.props.ings)}
+            ordered={this.purchaseHandler}
+            price={this.props.price}
+          />
+        </Aux>
+      );
+      orderSummary = (
+        <OrderSummary
+          ingredients={this.props.ings}
+          price={this.props.price}
+          purchaseCancelled={this.purchaseCancelHandler}
+          purchaseContinued={this.purchaseContinueHandler}
+        />
+      );
+    }
 
     return (
       <Aux>
@@ -115,25 +135,34 @@ class BurgerBuilder extends Component {
           show={this.state.purchasing}
           modalClosed={this.purchaseCancelHandler}
         >
-          <OrderSummary
-            ingredients={this.state.ingredients}
-            continue={this.purchaseContinueHandler}
-            cancel={this.purchaseCancelHandler}
-            price={this.state.totalPrice}
-          />
+          {orderSummary}
         </Modal>
-        <Burger ingredients={this.state.ingredients} />
-        <BuildControls
-          ingredientAdded={this.addIngredientHandler}
-          ingredientRemoved={this.removeIngredienthandler}
-          disabled={disabledInfo}
-          price={this.state.totalPrice}
-          purchaseable={this.state.purchaseable}
-          ordered={this.purchaseHandler}
-        />
+        {burger}
       </Aux>
     );
   }
 }
 
-export default BurgerBuilder;
+const mapStateToProps = (state) => {
+  return {
+    ings: state.burgerBuilder.ingredients,
+    price: state.burgerBuilder.totalPrice,
+    error: state.burgerBuilder.error,
+    isAuthenticated: state.auth.token !== null
+  }
+
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    //we need to pass ingredient name along with type, so we expect to get ingName in this function
+    onIngredientAdded: (ingName) => dispatch(actions.addIngredient(ingName)),
+    onIngredientRemoved: (ingName) => dispatch(actions.removeIngredient(ingName)),
+    onInitIngredients: () => dispatch(actions.initIngredients()),
+    onInitPurchased: () => dispatch(actions.purchaseInit()),
+    onSetRedirectPath: (path) => dispatch(actions.setAuthRedirectPath(path))
+  }
+}
+
+//Our wrapped withErrorHandler component is passed to the function that connect returns us - this connects our container to store
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios))

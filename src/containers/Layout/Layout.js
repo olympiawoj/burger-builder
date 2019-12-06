@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+
+import { connect } from "react-redux"
 //without .js bc our build workflow adds file extn
-import Aux from "../Aux/Aux";
+import Aux from "../Aux";
 import Toolbar from "../../components/Navigation/Toolbar/Toolbar";
 import SideDrawer from "../../components/Navigation/SideDrawer/SideDrawer";
-import { connect } from "react-redux"
-import classes from "./Layout.module.css";
 
+import classes from "./Layout.module.css";
 
 //allows us to use layout component as a wrapper for core content we want to render to the screen
 
@@ -28,12 +29,16 @@ class Layout extends Component {
     });
   };
 
+
+
   render() {
+    // console.log('is authenticated', this.props.isAuthenticated)
     return (
+
       <Aux>
         <Toolbar
-          isAuth={this.props.isAuthenticated}
-          toggle={this.sideDrawerToggleHandler} />
+          toggle={this.sideDrawerToggleHandler}
+          isAuth={this.props.isAuthenticated} />
         <SideDrawer
           isAuth={this.props.isAuthenticated}
           closed={this.sideDrawerClosedHandler}
@@ -45,10 +50,15 @@ class Layout extends Component {
   }
 }
 
+//look at our auth reducer to see if we have relevant info, if the token is not null, the user is authenticated
+
 const mapStateToProps = (state) => {
-  // console.log("Layout state", state)
   return {
     isAuthenticated: state.auth.token !== null
   }
 }
+
+
 export default connect(mapStateToProps)(Layout);
+
+

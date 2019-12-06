@@ -6,11 +6,14 @@ import Backdrop from "../Backdrop/Backdrop";
 class Modal extends Component {
   //only update if showChanges because that's the only thing which matters for me here
   shouldComponentUpdate(nextProps, nextState) {
-    return nextProps.show !== this.props.show;
+    return (
+      nextProps.show !== this.props.show ||
+      nextProps.children !== this.props.children
+    );
   }
 
   componentWillUpdate() {
-    console.log("Modal will update");
+    // console.log("Modal will update");
   }
   render() {
     return (
