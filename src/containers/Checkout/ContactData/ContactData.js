@@ -152,7 +152,7 @@ class ContactData extends Component {
                 config: this.state.orderForm[key]
             })
         }
-        console.log(formElementsArray, 'form')
+        // console.log(formElementsArray, 'form')
 
         let form = (
             <form onSubmit={this.orderHandler}>
