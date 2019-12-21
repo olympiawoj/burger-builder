@@ -1,6 +1,6 @@
 # The Burger Build App
 
-🛍A Burger Builder App built in React
+🍔 A Burger Builder App built in React
 
 
 ## Table of Contents
